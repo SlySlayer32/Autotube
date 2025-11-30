@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+ENV/
+env/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+.tox/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Project specific
+ab_tests/
+output_mixes/
+processed_clips/
+sessions/
+demo_mixes/
+visualizations/
+input_clips/
+test_sounds/
+test_audio_verification/
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+nul

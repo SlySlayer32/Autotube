@@ -1,0 +1,30 @@
+# Python Version Lock File
+# This file ensures strict Python version control for the project
+
+[python]
+version = "3.11.0"
+path = "C:\\Users\\Sly\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+strict = true
+
+[compatibility]
+# OpenL3 requires Python 3.10-3.11 (3.12+ breaks due to deprecated 'imp' module)
+openl3 = ">=0.4.2"
+tensorflow = ">=2.10.0,<2.16.0"
+tensorflow-hub = ">=0.14.0,<0.16.0"
+
+[validation]
+# These dependencies must be available for the project to function
+critical_imports = [
+    "tensorflow",
+    "openl3", 
+    "librosa",
+    "numpy",
+    "pydub",
+    "scikit-learn"
+]
+
+[setup]
+# Setup scripts to configure the environment
+windows_batch = "setup_python311.bat"
+windows_powershell = "setup_python311.ps1"
+validation_script = "python_version_control.py"

@@ -1,0 +1,47 @@
+flowchart TD
+    subgraph InputProcessing[Input Processing Function]
+        APISetup[**API Key Setup**] --> FreesoundSearch[**Freesound Search**]
+        FreesoundSearch --> AudioDownload[**Audio Download**]
+        AudioDownload --> LibraryStorage[**Library Storage**]
+        LibraryStorage --> Normalization[**Normalization**]
+        Normalization --> QualityEnhancement[**Quality Enhancement**]    end
+
+    subgraph Analysis[Analysis Function]
+        FeatureExtraction[**Feature Extraction**] --> NeuralClassification[**Neural Classification**]
+        NeuralClassification --> LoopPointDetection[**Loop Point Detection**]
+        LoopPointDetection --> EmotionalResponsePrediction[**Emotional Response Prediction**]
+    end
+
+    subgraph SettingsManagement[Settings Management Function]
+        ParameterConfiguration[**Parameter Configuration**] --> AIRecommendations[**AI Recommendations**]
+        AIRecommendations --> PresetApplication[**Preset Application**]
+    end
+
+    subgraph AudioProcessing[Audio Processing Function]
+        LoopCreation[**Loop Creation**] --> DynamicVariation[**Dynamic Variation**]
+        DynamicVariation --> Equalization[**Equalization**]
+        Equalization --> BinauralProcessing[**Binaural Processing**]
+        BinauralProcessing --> TimelineConstruction[**Timeline Construction**]
+    end
+
+    subgraph Rendering[Rendering Function]
+        PreviewGeneration[**Preview Generation**] --> FullTimelineRendering[**Full Timeline Rendering**]
+        FullTimelineRendering --> FileExport[**File Export**]
+    end
+
+    subgraph Visualization[Visualization Function]
+        WaveformDisplay[**Waveform Display**] --> SpectrogramGeneration[**Spectrogram Generation**]
+        SpectrogramGeneration --> TimelineVisualization[**Timeline Visualization**]
+    end
+
+    subgraph UserFeedback[User Feedback Function]
+        AudioPreview[**Audio Preview**] --> VisualFeedback[**Visual Feedback**]
+        VisualFeedback --> ParameterAdjustment[**Parameter Adjustment**]
+    end
+
+    InputProcessing --> Analysis
+    Analysis --> SettingsManagement
+    SettingsManagement --> AudioProcessing
+    AudioProcessing --> Rendering
+    Rendering --> Visualization
+    Visualization --> UserFeedback

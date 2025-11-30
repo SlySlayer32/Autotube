@@ -1,0 +1,11 @@
+{
+  "type": "binaural_beat",
+  "base_frequency": 440,
+  "beat_frequency": 5.0,
+  "duration": 60.0,
+  "sample_rate": 44100,
+  "purpose": "rem_sleep_creativity",
+  "loop_perfect": true,
+  "file_size_mb": 10.093730926513672,
+  "space_efficient": true
+}

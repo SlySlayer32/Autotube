@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "mermaid-live-editor": "^0.1.0"
+  },
+  "scripts": {
+    "start": "python scripts/run.py",
+    "dev": "python scripts/dev.py",
+    "test:watch": "python scripts/test_watch.py",
+    "dev:setup": "cmd /c dev_setup.bat",
+    "gui": "cmd /c run_gui.bat",
+    "clean": "python scripts/clean.py",
+    "clean:all": "python scripts/clean.py --all"
+  }
+}
