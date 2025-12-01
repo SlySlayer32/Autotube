@@ -74,7 +74,8 @@ class VideoGenerator:
                 text=True,
                 check=True,
             )
-            logger.debug(f"FFmpeg found: {result.stdout.split(chr(10))[0]}")
+            first_line = result.stdout.split("\n")[0]
+            logger.debug(f"FFmpeg found: {first_line}")
             return True
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             logger.error(f"FFmpeg not found or not working: {e}")
@@ -340,7 +341,17 @@ class VideoGenerator:
                 if stream.get("codec_type") == "video":
                     video_info["width"] = stream.get("width")
                     video_info["height"] = stream.get("height")
-                    video_info["fps"] = eval(stream.get("r_frame_rate", "0/1"))
+                    # Safely parse frame rate (format: "num/den")
+                    frame_rate = stream.get("r_frame_rate", "0/1")
+                    try:
+                        if "/" in frame_rate:
+                            num, den = frame_rate.split("/")
+                            fps_val = float(num) / float(den) if den != "0" else 0
+                            video_info["fps"] = fps_val
+                        else:
+                            video_info["fps"] = float(frame_rate)
+                    except (ValueError, ZeroDivisionError):
+                        video_info["fps"] = 0
                     video_info["video_codec"] = stream.get("codec_name")
                 elif stream.get("codec_type") == "audio":
                     video_info["audio_codec"] = stream.get("codec_name")

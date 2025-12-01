@@ -145,7 +145,7 @@ Relaxing {sound_type} Sounds - {duration} Hours
             "rainsounds",
             "rainfall",
             "rainstorm",
-            "rainforrest",
+            "rainforest",
             "thunderstorm",
             "rainloop",
         ],
