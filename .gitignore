@@ -39,6 +39,7 @@ node_modules/
 # Project specific
 ab_tests/
 output_mixes/
+output_videos/
 processed_clips/
 sessions/
 demo_mixes/
@@ -46,6 +47,10 @@ visualizations/
 input_clips/
 test_sounds/
 test_audio_verification/
+
+# YouTube credentials
+client_secrets.json
+youtube_credentials.json
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
