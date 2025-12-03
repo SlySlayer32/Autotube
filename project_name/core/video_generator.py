@@ -166,7 +166,10 @@ class VideoGenerator:
             duration_seconds = len(audio) / 1000.0
             logger.info(f"Audio duration: {duration_seconds:.2f} seconds")
         except Exception as e:
-            logger.error(f"Failed to read audio file: {e}")
+            logger.error(
+                f"Failed to read audio file. Ensure the file is in a supported format "
+                f"(WAV, MP3, FLAC, OGG, M4A) and is not corrupted: {e}"
+            )
             return None
 
         # Create or use background image
@@ -217,7 +220,10 @@ class VideoGenerator:
             )
 
             if result.returncode != 0:
-                logger.error(f"FFmpeg error: {result.stderr}")
+                logger.error(
+                    f"Video generation failed. FFmpeg returned error code "
+                    f"{result.returncode}: {result.stderr[:500]}"
+                )
                 return None
 
             logger.info(f"Video generated successfully: {output_path}")
@@ -244,8 +250,10 @@ class VideoGenerator:
         Args:
             audio_path: Path to the input audio file.
             output_filename: Name for the output video file.
-            background_color: Hex color for background (FFmpeg format).
-            waveform_color: Hex color for waveform (FFmpeg format).
+            background_color: Hex color in FFmpeg format for background
+                (e.g., '0xRRGGBB' where RR, GG, BB are hex values).
+            waveform_color: Hex color in FFmpeg format for waveform
+                (e.g., '0xRRGGBB' where RR, GG, BB are hex values).
 
         Returns:
             Path to the generated video, or None if generation failed.
@@ -290,7 +298,13 @@ class VideoGenerator:
             )
 
             if result.returncode != 0:
-                logger.error(f"FFmpeg error: {result.stderr}")
+                logger.error(
+                    f"FFmpeg failed to generate waveform video. "
+                    f"Return code: {result.returncode}. "
+                    f"Input: {audio_path}. "
+                    f"Output: {output_path}. "
+                    f"Error: {result.stderr[:500]}"
+                )
                 return None
 
             logger.info(f"Waveform video generated: {output_path}")

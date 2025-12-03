@@ -372,14 +372,12 @@ Relaxing {sound_type} Sounds - {duration} Hours
         if additional_tags:
             tags.extend(additional_tags)
 
-        # Remove duplicates while preserving order
+        # Remove duplicates while preserving order using walrus operator
         seen = set()
-        unique_tags = []
-        for tag in tags:
-            tag_lower = tag.lower()
-            if tag_lower not in seen:
-                seen.add(tag_lower)
-                unique_tags.append(tag)
+        unique_tags = [
+            tag for tag in tags
+            if (tag_lower := tag.lower()) not in seen and not seen.add(tag_lower)
+        ]
 
         # Limit to max_tags
         result = unique_tags[:max_tags]

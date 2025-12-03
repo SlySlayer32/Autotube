@@ -119,8 +119,13 @@ class YouTubeUploader:
                     )
                     creds = flow.run_local_server(port=0)
 
-                # Save credentials for future use
-                with open(self.credentials_file, "w") as token_file:
+                # Save credentials for future use with secure permissions
+                fd = os.open(
+                    self.credentials_file,
+                    os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
+                    0o600
+                )
+                with os.fdopen(fd, "w") as token_file:
                     token_file.write(creds.to_json())
                 logger.info(f"Credentials saved to {self.credentials_file}")
 
@@ -177,8 +182,7 @@ class YouTubeUploader:
             logger.error(f"Required library not installed: {e}")
             return None
 
-        # Get category ID
-        # Default: Entertainment
+        # Get category ID (defaults to Entertainment if not found)
         category_id = self.VIDEO_CATEGORIES.get(category, "24")
 
         # Prepare video metadata
@@ -270,8 +274,8 @@ class YouTubeUploader:
                     logger.error(f"Max retries exceeded: {error}")
                     return None
 
-                # Exponential backoff with jitter
-                sleep_time = random.random() * (2**retry)
+                # Exponential backoff with jitter, capped at 60 seconds
+                sleep_time = min(random.random() * (2**retry), 60)
                 logger.info(f"Retry {retry}/{MAX_RETRIES} in {sleep_time:.1f}s...")
                 time.sleep(sleep_time)
                 error = None

@@ -62,7 +62,11 @@ def mix(input, output, duration, mix_type):
     click.echo(f"Creating {mix_type} mix ({duration} minutes)...")
 
     processor = SoundProcessor(input_folder=input, output_folder=output)
-    processor.preprocess_audio()
+    # Preprocess all audio files in the input folder
+    for filename in os.listdir(input):
+        file_path = os.path.join(input, filename)
+        if os.path.isfile(file_path):
+            processor.preprocess_audio(file_path)
     processor.analyze_clips()
     mix_path = processor.create_mix(
         target_duration_min=duration, mix_type=mix_type
@@ -404,12 +408,12 @@ def launch_gui(use_classic=False):
         from project_name.gui.gui import SoundToolGUI
 
         root = Tk()
-        _app = SoundToolGUI(root)
+        SoundToolGUI(root)
     else:
         from project_name.gui.dashboard_app import SoundDashboardApp
 
         root = Tk()
-        _app = SoundDashboardApp(root)
+        SoundDashboardApp(root)
 
     root.mainloop()
 
@@ -424,6 +428,14 @@ def interact_with_freesound_api():
     api_key = click.prompt("Enter your Freesound API key")
     if not api_key:
         click.echo("API key is required.")
+        return
+
+    # Basic validation of API key format
+    if len(api_key) < 10 or not api_key.isalnum():
+        click.echo(
+            "Invalid API key format. "
+            "Key should be alphanumeric and at least 10 characters."
+        )
         return
 
     query = click.prompt("Enter search query (e.g., 'ambient rain')")

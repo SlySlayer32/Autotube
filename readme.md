@@ -215,15 +215,15 @@ Place your `client_secrets.json` in the project root for YouTube API access.
 
 Run all tests:
 ```bash
-python -m pytest tests/ -v -p no:cacheprovider -o addopts=""
+pytest tests/ -v
 ```
 
 Run specific test modules:
 ```bash
-python -m pytest tests/test_metadata_generator.py -v -o addopts=""
-python -m pytest tests/test_video_generator.py -v -o addopts=""
-python -m pytest tests/test_youtube_uploader.py -v -o addopts=""
-python -m pytest tests/test_orchestrator.py -v -o addopts=""
+pytest tests/test_metadata_generator.py -v
+pytest tests/test_video_generator.py -v
+pytest tests/test_youtube_uploader.py -v
+pytest tests/test_orchestrator.py -v
 ```
 
 ## Troubleshooting

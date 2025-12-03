@@ -162,6 +162,11 @@ class AutotubeOrchestrator:
         """
         logger.info(f"Creating video from: {audio_path}")
 
+        # Validate audio file exists before proceeding
+        if not os.path.exists(audio_path):
+            logger.error(f"Audio file not found: {audio_path}")
+            return None
+
         try:
             if use_waveform:
                 video_path = self.video_generator.generate_video_with_waveform(
@@ -301,9 +306,8 @@ class AutotubeOrchestrator:
 
         # Step 2: Generate metadata
         logger.info("Step 2: Generating metadata...")
-        duration_hours = duration_minutes // 60
-        if duration_hours == 0:
-            duration_hours = 1
+        # Use fractional hours for more accurate metadata representation
+        duration_hours = max(1, round(duration_minutes / 60))
         metadata = self.generate_metadata(
             sound_type=sound_type,
             duration_hours=duration_hours,
