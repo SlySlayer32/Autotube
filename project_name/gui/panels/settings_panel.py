@@ -6,9 +6,10 @@ This panel provides interfaces for:
 - Preset application
 """
 
+import json
 import logging
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import filedialog, messagebox, ttk
 
 logger = logging.getLogger(__name__)
 
@@ -25,19 +26,236 @@ class SettingsPanel:
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
         # Create tabs for each step in the settings function
+        self.general_frame = ttk.Frame(self.notebook)
         self.config_frame = ttk.Frame(self.notebook)
         self.ai_frame = ttk.Frame(self.notebook)
         self.preset_frame = ttk.Frame(self.notebook)
 
         # Add tabs to notebook
+        self.notebook.add(self.general_frame, text="General Settings")
         self.notebook.add(self.config_frame, text="Parameter Configuration")
         self.notebook.add(self.ai_frame, text="AI Recommendations")
         self.notebook.add(self.preset_frame, text="Preset Application")
 
         # Setup each tab
+        self._setup_general_tab()
         self._setup_config_tab()
         self._setup_ai_tab()
         self._setup_preset_tab()
+
+    def _setup_general_tab(self):
+        """Set up the general settings tab."""
+        frame = ttk.Frame(self.general_frame, padding="10")
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        ttk.Label(
+            frame, text="General Settings", font=("Arial", 12, "bold")
+        ).pack(pady=10)
+
+        # Folders section
+        folders_frame = ttk.LabelFrame(frame, text="Folder Paths", padding="10")
+        folders_frame.pack(fill=tk.X, pady=10)
+
+        # Input folder
+        ttk.Label(folders_frame, text="Input Folder:").grid(
+            row=0, column=0, sticky=tk.W, pady=5
+        )
+        self.input_folder_var = tk.StringVar(value="input_clips")
+        ttk.Entry(folders_frame, textvariable=self.input_folder_var, width=40).grid(
+            row=0, column=1, pady=5, padx=5
+        )
+        ttk.Button(
+            folders_frame,
+            text="Browse...",
+            command=lambda: self.input_folder_var.set(
+                filedialog.askdirectory(title="Select Input Folder")
+            ),
+        ).grid(row=0, column=2, pady=5)
+
+        # Output folder
+        ttk.Label(folders_frame, text="Output Folder:").grid(
+            row=1, column=0, sticky=tk.W, pady=5
+        )
+        self.output_folder_var = tk.StringVar(value="output_mixes")
+        ttk.Entry(folders_frame, textvariable=self.output_folder_var, width=40).grid(
+            row=1, column=1, pady=5, padx=5
+        )
+        ttk.Button(
+            folders_frame,
+            text="Browse...",
+            command=lambda: self.output_folder_var.set(
+                filedialog.askdirectory(title="Select Output Folder")
+            ),
+        ).grid(row=1, column=2, pady=5)
+
+        # Video folder
+        ttk.Label(folders_frame, text="Video Folder:").grid(
+            row=2, column=0, sticky=tk.W, pady=5
+        )
+        self.video_folder_var = tk.StringVar(value="output_videos")
+        ttk.Entry(folders_frame, textvariable=self.video_folder_var, width=40).grid(
+            row=2, column=1, pady=5, padx=5
+        )
+        ttk.Button(
+            folders_frame,
+            text="Browse...",
+            command=lambda: self.video_folder_var.set(
+                filedialog.askdirectory(title="Select Video Folder")
+            ),
+        ).grid(row=2, column=2, pady=5)
+
+        # YouTube settings section
+        youtube_frame = ttk.LabelFrame(frame, text="YouTube Settings", padding="10")
+        youtube_frame.pack(fill=tk.X, pady=10)
+
+        ttk.Label(youtube_frame, text="Client Secrets File:").grid(
+            row=0, column=0, sticky=tk.W, pady=5
+        )
+        self.client_secrets_var = tk.StringVar(value="client_secrets.json")
+        ttk.Entry(youtube_frame, textvariable=self.client_secrets_var, width=40).grid(
+            row=0, column=1, pady=5, padx=5
+        )
+        ttk.Button(
+            youtube_frame,
+            text="Browse...",
+            command=lambda: self.client_secrets_var.set(
+                filedialog.askopenfilename(
+                    title="Select Client Secrets File",
+                    filetypes=[("JSON Files", "*.json"), ("All Files", "*.*")],
+                )
+            ),
+        ).grid(row=0, column=2, pady=5)
+
+        ttk.Label(youtube_frame, text="Default Privacy:").grid(
+            row=1, column=0, sticky=tk.W, pady=5
+        )
+        self.default_privacy_var = tk.StringVar(value="private")
+        ttk.Combobox(
+            youtube_frame,
+            textvariable=self.default_privacy_var,
+            values=["public", "private", "unlisted"],
+            width=15,
+        ).grid(row=1, column=1, sticky=tk.W, pady=5, padx=5)
+
+        # Video settings section
+        video_frame = ttk.LabelFrame(frame, text="Video Settings", padding="10")
+        video_frame.pack(fill=tk.X, pady=10)
+
+        self.default_waveform_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            video_frame,
+            text="Use Waveform Visualization by Default",
+            variable=self.default_waveform_var,
+        ).grid(row=0, column=0, sticky=tk.W, pady=5)
+
+        ttk.Label(video_frame, text="Background Color (RGB):").grid(
+            row=1, column=0, sticky=tk.W, pady=5
+        )
+        bg_color_frame = ttk.Frame(video_frame)
+        bg_color_frame.grid(row=1, column=1, sticky=tk.W, pady=5)
+
+        self.bg_r_var = tk.StringVar(value="25")
+        self.bg_g_var = tk.StringVar(value="25")
+        self.bg_b_var = tk.StringVar(value="35")
+
+        ttk.Label(bg_color_frame, text="R:").pack(side=tk.LEFT, padx=2)
+        ttk.Entry(bg_color_frame, textvariable=self.bg_r_var, width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Label(bg_color_frame, text="G:").pack(side=tk.LEFT, padx=2)
+        ttk.Entry(bg_color_frame, textvariable=self.bg_g_var, width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Label(bg_color_frame, text="B:").pack(side=tk.LEFT, padx=2)
+        ttk.Entry(bg_color_frame, textvariable=self.bg_b_var, width=5).pack(side=tk.LEFT, padx=2)
+
+        # Freesound settings section
+        freesound_frame = ttk.LabelFrame(frame, text="Freesound API", padding="10")
+        freesound_frame.pack(fill=tk.X, pady=10)
+
+        ttk.Label(freesound_frame, text="API Key:").grid(
+            row=0, column=0, sticky=tk.W, pady=5
+        )
+        self.freesound_key_var = tk.StringVar()
+        ttk.Entry(
+            freesound_frame, textvariable=self.freesound_key_var, width=40, show="*"
+        ).grid(row=0, column=1, pady=5, padx=5)
+
+        ttk.Label(
+            freesound_frame,
+            text="(Leave blank if not using Freesound)",
+            font=("Arial", 8, "italic"),
+        ).grid(row=1, column=0, columnspan=2, sticky=tk.W, pady=2)
+
+        # Save and reset buttons
+        button_frame = ttk.Frame(frame)
+        button_frame.pack(pady=10)
+
+        ttk.Button(
+            button_frame, text="Save Settings", command=self._save_general_settings
+        ).pack(side=tk.LEFT, padx=5)
+        ttk.Button(
+            button_frame, text="Reset to Defaults", command=self._reset_general_settings
+        ).pack(side=tk.LEFT, padx=5)
+
+    def _save_general_settings(self):
+        """Save general settings."""
+        try:
+            # Validate RGB values
+            try:
+                bg_r = int(self.bg_r_var.get())
+                bg_g = int(self.bg_g_var.get())
+                bg_b = int(self.bg_b_var.get())
+                
+                if not all(0 <= val <= 255 for val in [bg_r, bg_g, bg_b]):
+                    raise ValueError("RGB values must be between 0 and 255")
+            except ValueError as e:
+                messagebox.showerror(
+                    "Invalid RGB Values",
+                    f"Background color values must be integers between 0 and 255.\n\n{e}"
+                )
+                return
+            
+            settings = {
+                "folders": {
+                    "input": self.input_folder_var.get(),
+                    "output": self.output_folder_var.get(),
+                    "video": self.video_folder_var.get(),
+                },
+                "youtube": {
+                    "client_secrets": self.client_secrets_var.get(),
+                    "default_privacy": self.default_privacy_var.get(),
+                },
+                "video": {
+                    "default_waveform": self.default_waveform_var.get(),
+                    "background_color": [bg_r, bg_g, bg_b],
+                },
+                "freesound": {"api_key": self.freesound_key_var.get()},
+            }
+
+            # Save to config file
+            config_file = "autotube_settings.json"
+            with open(config_file, "w") as f:
+                json.dump(settings, f, indent=2)
+
+            logger.info(f"Settings saved to {config_file}")
+            messagebox.showinfo("Success", f"Settings saved to {config_file}")
+
+        except Exception as e:
+            logger.error(f"Error saving settings: {e}")
+            messagebox.showerror("Error", f"Failed to save settings: {e}")
+
+    def _reset_general_settings(self):
+        """Reset general settings to defaults."""
+        self.input_folder_var.set("input_clips")
+        self.output_folder_var.set("output_mixes")
+        self.video_folder_var.set("output_videos")
+        self.client_secrets_var.set("client_secrets.json")
+        self.default_privacy_var.set("private")
+        self.default_waveform_var.set(False)
+        self.bg_r_var.set("25")
+        self.bg_g_var.set("25")
+        self.bg_b_var.set("35")
+        self.freesound_key_var.set("")
+
+        logger.info("General settings reset to defaults")
+        messagebox.showinfo("Reset", "General settings reset to default values")
 
     def _setup_config_tab(self):
         """Set up the parameter configuration tab."""

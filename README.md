@@ -245,12 +245,90 @@ python -m project_name.cli status
 
 Launch the graphical user interface:
 ```bash
-# Modern dashboard UI
+# Modern dashboard UI (recommended)
 python -m project_name.cli gui
 
 # Classic UI
 python -m project_name.cli gui --classic
 ```
+
+#### GUI Features
+
+The GUI provides complete feature parity with the CLI, exposing all workflow steps and configuration options:
+
+**Dashboard Mode** (Modern Interface):
+- **🚀 Pipeline Control Panel**: Complete workflow automation
+  - Full pipeline mode: One-click automation from audio to upload
+  - Step-by-step mode: Granular control over each stage (Mix → Metadata → Video → Upload)
+  - Progress tracking and results display
+  - All configuration options (folders, duration, sound type, mix type, waveform, privacy)
+  - Status and folder information display
+  
+- **📅 Content Planning Panel**: Video content scheduling
+  - Generate content plans for multiple videos
+  - Display in organized table view
+  - Export to JSON, CSV, or text formats
+  - Plan statistics and analytics
+  
+- **📁 Input Processing Panel**: Audio file management
+  - Load local audio files
+  - Freesound integration for sound search and download
+  - File preview and organization
+  
+- **🎵 Audio Processing Panel**: Audio manipulation
+  - Process and normalize audio files
+  - Apply effects and filters
+  - Audio analysis and categorization
+  
+- **📊 Analysis Panel**: Visualization and metrics
+  - Waveform visualization
+  - Frequency spectrum analysis
+  - A/B testing interface
+  - Sleep quality metrics
+  
+- **🧠 Therapeutic Audio Panel**: Advanced audio generation
+  - 2024 research-based therapeutic audio features
+  - Psychoacoustic optimization
+  - Binaural beat generation
+  
+- **⚙️ Settings Panel**: Complete configuration
+  - Folder paths (input, output, video)
+  - YouTube API credentials and privacy settings
+  - Video options (waveform, background color)
+  - Freesound API key configuration
+  - Audio processing parameters
+  - Mix presets and AI recommendations
+
+**Classic Mode** (Traditional Interface):
+- **Enhanced Toolbar**: Quick access to all major functions
+  - 📁 Load Files
+  - ⚙️ Process Audio
+  - 🎵 Create Mix
+  - 🎬 Generate Video
+  - ☁️ Upload to YouTube
+  - 🚀 Full Pipeline
+  - 📅 Plan Content
+  
+- **Complete Menu Bar**:
+  - File: Load files, Freesound search, Settings, Exit
+  - Edit: Preferences, Clear log
+  - View: Refresh, Toggle toolbar, Toggle status bar
+  - Help: About
+  
+- **Dialog-Based Workflows**:
+  - Video generation with full options
+  - YouTube upload with metadata fields
+  - Pipeline configuration and execution
+  - Content planning and scheduling
+
+**Key GUI Features**:
+- ✅ Complete CLI feature parity
+- ✅ Thread-based execution (non-blocking UI)
+- ✅ Real-time progress tracking
+- ✅ Error handling and validation
+- ✅ Configuration persistence
+- ✅ Both one-click and step-by-step workflows
+- ✅ Comprehensive status displays
 
 ### Freesound Integration
 

@@ -19,6 +19,8 @@ from project_name.gui.panels import (
     TherapeuticAudioPanel,
     EnhancedTherapeuticPanel,
     SettingsPanel,
+    PipelinePanel,
+    ContentPlanningPanel,
 )
 
 logger = logging.getLogger(__name__)
@@ -49,6 +51,15 @@ class SidebarPanel:
 
         # Navigation buttons
         self.buttons = {}
+
+        # Pipeline control panel button (NEW - PRIMARY FEATURE)
+        self.buttons["pipeline"] = ttk.Button(
+            self.frame,
+            text="🚀 Pipeline Control",
+            width=20,
+            command=lambda: self.callback("pipeline"),
+        )
+        self.buttons["pipeline"].pack(fill=tk.X, pady=5)
 
         # Input panel button
         self.buttons["input"] = ttk.Button(
@@ -83,6 +94,15 @@ class SidebarPanel:
             command=lambda: self.callback("therapeutic"),
         )
         self.buttons["therapeutic"].pack(fill=tk.X, pady=5)
+
+        # Content planning panel button
+        self.buttons["planning"] = ttk.Button(
+            self.frame,
+            text="📅 Content Planning",
+            width=20,
+            command=lambda: self.callback("planning"),
+        )
+        self.buttons["planning"].pack(fill=tk.X, pady=5)
 
         # Settings panel button
         self.buttons["settings"] = ttk.Button(
@@ -135,8 +155,8 @@ class Dashboard:
         self.root.rowconfigure(0, weight=1)  # Main row expands
 
         # Initialize UI
-        self.setup_ui()        # Switch to therapeutic panel by default (2024 research features)
-        self.show_panel("therapeutic")
+        self.setup_ui()        # Switch to pipeline panel by default (main feature for complete workflow)
+        self.show_panel("pipeline")
 
         # Set up periodic callbacks
         self.setup_periodic_callbacks()
@@ -199,7 +219,10 @@ class Dashboard:
             panel_frame.content_frame = ttk.Frame(panel_frame)
             panel_frame.content_frame.pack(fill=tk.BOTH, expand=True)
 
-            if panel_name == "input":
+            if panel_name == "pipeline":
+                PipelinePanel(panel_frame)
+                panel_title = "🚀 Pipeline Control - Complete Workflow Automation"
+            elif panel_name == "input":
                 InputProcessingPanel(panel_frame)
                 panel_title = "Input Processing"
             elif panel_name == "analysis":
@@ -211,6 +234,9 @@ class Dashboard:
             elif panel_name == "therapeutic":
                 EnhancedTherapeuticPanel(panel_frame)
                 panel_title = "🧠 Enhanced Therapeutic Audio - 2024 Research"
+            elif panel_name == "planning":
+                ContentPlanningPanel(panel_frame)
+                panel_title = "📅 Content Planning & Scheduling"
             elif panel_name == "settings":
                 SettingsPanel(panel_frame)
                 panel_title = "Settings"
