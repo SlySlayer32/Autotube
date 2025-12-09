@@ -154,16 +154,19 @@ class SoundToolGUI:
         file_menu.add_command(label="Exit", command=self.root.quit)
         menubar.add_cascade(label="File", menu=file_menu)
 
-        # Edit menu (placeholder)
+        # Edit menu
         edit_menu = tk.Menu(menubar, tearoff=0)
-        edit_menu.add_command(
-            label="Preferences...", command=self._open_settings
-        )  # Placeholder
+        edit_menu.add_command(label="Preferences...", command=self._open_settings)
+        edit_menu.add_separator()
+        edit_menu.add_command(label="Clear Log", command=self._clear_log)
         menubar.add_cascade(label="Edit", menu=edit_menu)
 
-        # View menu (placeholder)
+        # View menu
         view_menu = tk.Menu(menubar, tearoff=0)
-        # Add view options here, e.g., toggle panels
+        view_menu.add_command(label="Refresh", command=self._refresh_view)
+        view_menu.add_separator()
+        view_menu.add_checkbutton(label="Show Toolbar", command=self._toggle_toolbar)
+        view_menu.add_checkbutton(label="Show Status Bar", command=self._toggle_status_bar)
         menubar.add_cascade(label="View", menu=view_menu)
 
         # Help menu
@@ -177,10 +180,58 @@ class SoundToolGUI:
         """Create the toolbar."""
         self.toolbar = ttk.Frame(self.root, padding="2")
         self.toolbar.pack(side=tk.TOP, fill=tk.X)
-        # Placeholder for toolbar buttons
-        ttk.Label(
-            self.toolbar, text="Toolbar (placeholder for Load, Process, Mix buttons)"
-        ).pack(side=tk.LEFT, padx=5)
+        
+        # Load files button
+        ttk.Button(
+            self.toolbar,
+            text="📁 Load Files",
+            command=self._load_local_files,
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Process audio button
+        ttk.Button(
+            self.toolbar,
+            text="⚙️ Process Audio",
+            command=self._process_audio,
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Create mix button
+        ttk.Button(
+            self.toolbar,
+            text="🎵 Create Mix",
+            command=self._create_mix,
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Generate video button
+        ttk.Button(
+            self.toolbar,
+            text="🎬 Generate Video",
+            command=self._generate_video,
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Upload button
+        ttk.Button(
+            self.toolbar,
+            text="☁️ Upload",
+            command=self._upload_to_youtube,
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Separator
+        ttk.Separator(self.toolbar, orient=tk.VERTICAL).pack(side=tk.LEFT, fill=tk.Y, padx=5)
+        
+        # Pipeline button
+        ttk.Button(
+            self.toolbar,
+            text="🚀 Full Pipeline",
+            command=self._run_full_pipeline,
+        ).pack(side=tk.LEFT, padx=2)
+        
+        # Content planning button
+        ttk.Button(
+            self.toolbar,
+            text="📅 Plan Content",
+            command=self._open_content_planning,
+        ).pack(side=tk.LEFT, padx=2)
 
     def _create_status_bar(self):
         """Create the status bar."""
@@ -619,3 +670,447 @@ class SoundToolGUI:
         self.log_text.insert(tk.END, "Enhanced GUI initialized successfully.\n")
         self.log_text.insert(tk.END, "Ready for audio processing.\n")
         self.log_text.config(state=tk.DISABLED)
+
+    def _process_audio(self):
+        """Process loaded audio files."""
+        messagebox.showinfo(
+            "Process Audio",
+            "Audio processing will preprocess and analyze loaded files.\n\n"
+            "This feature normalizes audio, categorizes clips, and prepares them for mixing."
+        )
+
+    def _generate_video(self):
+        """Generate video from audio."""
+        # Open a dialog to select audio file and options
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Generate Video")
+        dialog.geometry("500x300")
+
+        ttk.Label(dialog, text="Generate Video from Audio", font=("Arial", 12, "bold")).pack(
+            pady=10
+        )
+
+        # Audio file selection
+        file_frame = ttk.Frame(dialog)
+        file_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        ttk.Label(file_frame, text="Audio File:").pack(side=tk.LEFT, padx=5)
+        audio_var = tk.StringVar()
+        ttk.Entry(file_frame, textvariable=audio_var, width=30).pack(side=tk.LEFT, padx=5)
+        ttk.Button(
+            file_frame,
+            text="Browse...",
+            command=lambda: audio_var.set(
+                filedialog.askopenfilename(
+                    title="Select Audio File",
+                    filetypes=[
+                        ("Audio Files", "*.mp3 *.wav *.flac"),
+                        ("All Files", "*.*"),
+                    ],
+                )
+            ),
+        ).pack(side=tk.LEFT, padx=2)
+
+        # Options
+        options_frame = ttk.LabelFrame(dialog, text="Options", padding="10")
+        options_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        waveform_var = tk.BooleanVar()
+        ttk.Checkbutton(
+            options_frame, text="Use Waveform Visualization", variable=waveform_var
+        ).pack(anchor=tk.W, pady=5)
+
+        title_var = tk.StringVar()
+        ttk.Label(options_frame, text="Video Title:").pack(anchor=tk.W, pady=2)
+        ttk.Entry(options_frame, textvariable=title_var, width=40).pack(
+            fill=tk.X, pady=2
+        )
+
+        # Buttons
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(pady=10)
+
+        def generate():
+            if not audio_var.get():
+                messagebox.showerror("Error", "Please select an audio file")
+                return
+
+            try:
+                from project_name.core.video_generator import VideoGenerator
+
+                gen = VideoGenerator()
+                if waveform_var.get():
+                    video_path = gen.generate_video_with_waveform(audio_var.get())
+                else:
+                    video_path = gen.generate_video_from_audio(
+                        audio_var.get(), title_text=title_var.get() or None
+                    )
+
+                if video_path:
+                    messagebox.showinfo("Success", f"Video created: {video_path}")
+                    dialog.destroy()
+                else:
+                    messagebox.showerror("Error", "Failed to create video")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error creating video: {e}")
+
+        ttk.Button(button_frame, text="Generate", command=generate).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Cancel", command=dialog.destroy).pack(
+            side=tk.LEFT, padx=5
+        )
+
+    def _upload_to_youtube(self):
+        """Upload video to YouTube."""
+        # Open upload dialog
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Upload to YouTube")
+        dialog.geometry("600x400")
+
+        ttk.Label(dialog, text="Upload Video to YouTube", font=("Arial", 12, "bold")).pack(
+            pady=10
+        )
+
+        # Video file selection
+        file_frame = ttk.Frame(dialog)
+        file_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        ttk.Label(file_frame, text="Video File:").pack(side=tk.LEFT, padx=5)
+        video_var = tk.StringVar()
+        ttk.Entry(file_frame, textvariable=video_var, width=35).pack(side=tk.LEFT, padx=5)
+        ttk.Button(
+            file_frame,
+            text="Browse...",
+            command=lambda: video_var.set(
+                filedialog.askopenfilename(
+                    title="Select Video File",
+                    filetypes=[("Video Files", "*.mp4 *.avi"), ("All Files", "*.*")],
+                )
+            ),
+        ).pack(side=tk.LEFT, padx=2)
+
+        # Metadata
+        meta_frame = ttk.LabelFrame(dialog, text="Video Metadata", padding="10")
+        meta_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        ttk.Label(meta_frame, text="Title:").grid(row=0, column=0, sticky=tk.W, pady=2)
+        title_var = tk.StringVar()
+        ttk.Entry(meta_frame, textvariable=title_var, width=50).grid(
+            row=0, column=1, pady=2, sticky=tk.EW
+        )
+
+        ttk.Label(meta_frame, text="Description:").grid(row=1, column=0, sticky=tk.NW, pady=2)
+        desc_text = tk.Text(meta_frame, height=5, width=50)
+        desc_text.grid(row=1, column=1, pady=2, sticky=tk.EW)
+
+        ttk.Label(meta_frame, text="Tags:").grid(row=2, column=0, sticky=tk.W, pady=2)
+        tags_var = tk.StringVar()
+        ttk.Entry(meta_frame, textvariable=tags_var, width=50).grid(
+            row=2, column=1, pady=2, sticky=tk.EW
+        )
+
+        ttk.Label(meta_frame, text="Privacy:").grid(row=3, column=0, sticky=tk.W, pady=2)
+        privacy_var = tk.StringVar(value="private")
+        ttk.Combobox(
+            meta_frame,
+            textvariable=privacy_var,
+            values=["public", "private", "unlisted"],
+            width=15,
+        ).grid(row=3, column=1, sticky=tk.W, pady=2)
+
+        meta_frame.columnconfigure(1, weight=1)
+
+        # Buttons
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(pady=10)
+
+        def upload():
+            if not video_var.get():
+                messagebox.showerror("Error", "Please select a video file")
+                return
+            if not title_var.get():
+                messagebox.showerror("Error", "Please enter a video title")
+                return
+
+            try:
+                from project_name.api.youtube_uploader import YouTubeUploader
+
+                uploader = YouTubeUploader()
+                description = desc_text.get(1.0, tk.END).strip()
+                tags = [t.strip() for t in tags_var.get().split(",") if t.strip()]
+
+                video_id = uploader.upload_video(
+                    video_path=video_var.get(),
+                    title=title_var.get(),
+                    description=description,
+                    tags=tags,
+                    privacy_status=privacy_var.get(),
+                )
+
+                if video_id:
+                    url = f"https://www.youtube.com/watch?v={video_id}"
+                    messagebox.showinfo(
+                        "Success", f"Video uploaded successfully!\n\nVideo ID: {video_id}\nURL: {url}"
+                    )
+                    dialog.destroy()
+                else:
+                    messagebox.showerror("Error", "Failed to upload video")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error uploading video: {e}")
+
+        ttk.Button(button_frame, text="Upload", command=upload).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Cancel", command=dialog.destroy).pack(
+            side=tk.LEFT, padx=5
+        )
+
+    def _run_full_pipeline(self):
+        """Run the complete pipeline."""
+        # Open pipeline configuration dialog
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Full Pipeline")
+        dialog.geometry("600x500")
+
+        ttk.Label(dialog, text="Full Pipeline Automation", font=("Arial", 12, "bold")).pack(
+            pady=10
+        )
+
+        # Configuration
+        config_frame = ttk.LabelFrame(dialog, text="Configuration", padding="10")
+        config_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # Sound type
+        ttk.Label(config_frame, text="Sound Type:").grid(row=0, column=0, sticky=tk.W, pady=2)
+        sound_var = tk.StringVar(value="Rain")
+        ttk.Combobox(
+            config_frame,
+            textvariable=sound_var,
+            values=["Rain", "Ocean", "Nature", "Forest", "White Noise"],
+            width=15,
+        ).grid(row=0, column=1, sticky=tk.W, pady=2)
+
+        # Mix type
+        ttk.Label(config_frame, text="Mix Type:").grid(row=1, column=0, sticky=tk.W, pady=2)
+        mix_var = tk.StringVar(value="sleep")
+        ttk.Combobox(
+            config_frame,
+            textvariable=mix_var,
+            values=["sleep", "focus", "relax"],
+            width=15,
+        ).grid(row=1, column=1, sticky=tk.W, pady=2)
+
+        # Duration
+        ttk.Label(config_frame, text="Duration (min):").grid(
+            row=2, column=0, sticky=tk.W, pady=2
+        )
+        duration_var = tk.StringVar(value="60")
+        ttk.Entry(config_frame, textvariable=duration_var, width=15).grid(
+            row=2, column=1, sticky=tk.W, pady=2
+        )
+
+        # Options
+        waveform_var = tk.BooleanVar()
+        ttk.Checkbutton(
+            config_frame, text="Use Waveform Visualization", variable=waveform_var
+        ).grid(row=3, column=0, columnspan=2, sticky=tk.W, pady=5)
+
+        upload_var = tk.BooleanVar()
+        ttk.Checkbutton(config_frame, text="Upload to YouTube", variable=upload_var).grid(
+            row=4, column=0, columnspan=2, sticky=tk.W, pady=2
+        )
+
+        # Privacy
+        ttk.Label(config_frame, text="Privacy:").grid(row=5, column=0, sticky=tk.W, pady=2)
+        privacy_var = tk.StringVar(value="private")
+        ttk.Combobox(
+            config_frame,
+            textvariable=privacy_var,
+            values=["public", "private", "unlisted"],
+            width=15,
+        ).grid(row=5, column=1, sticky=tk.W, pady=2)
+
+        # Progress
+        progress_frame = ttk.Frame(dialog)
+        progress_frame.pack(fill=tk.X, padx=10, pady=10)
+
+        progress_var = tk.DoubleVar()
+        progress_bar = ttk.Progressbar(
+            progress_frame, variable=progress_var, mode="determinate"
+        )
+        progress_bar.pack(fill=tk.X)
+
+        status_var = tk.StringVar(value="Ready to start")
+        ttk.Label(progress_frame, textvariable=status_var).pack(pady=5)
+
+        # Buttons
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(pady=10)
+
+        def run_pipeline():
+            try:
+                duration = int(duration_var.get())
+                if duration <= 0:
+                    raise ValueError("Duration must be positive")
+
+                from project_name.core.orchestrator import AutotubeOrchestrator
+
+                orchestrator = AutotubeOrchestrator()
+
+                status_var.set("Running pipeline...")
+                progress_var.set(25)
+                self.root.update()
+
+                results = orchestrator.run_full_pipeline(
+                    sound_type=sound_var.get(),
+                    duration_minutes=duration,
+                    mix_type=mix_var.get(),
+                    privacy_status=privacy_var.get(),
+                    use_waveform=waveform_var.get(),
+                    upload=upload_var.get(),
+                )
+
+                progress_var.set(100)
+
+                if results["success"]:
+                    msg = "Pipeline completed successfully!\n\n"
+                    if results["audio_path"]:
+                        msg += f"Audio: {results['audio_path']}\n"
+                    if results["video_path"]:
+                        msg += f"Video: {results['video_path']}\n"
+                    if results["video_id"]:
+                        msg += f"YouTube ID: {results['video_id']}\n"
+                        msg += f"URL: https://www.youtube.com/watch?v={results['video_id']}"
+
+                    messagebox.showinfo("Success", msg)
+                    dialog.destroy()
+                else:
+                    msg = "Pipeline failed:\n" + "\n".join(results.get("errors", []))
+                    messagebox.showerror("Pipeline Failed", msg)
+                    status_var.set("Pipeline failed")
+
+            except Exception as e:
+                messagebox.showerror("Error", f"Error running pipeline: {e}")
+                status_var.set("Error")
+
+        run_btn = ttk.Button(button_frame, text="Run Pipeline", command=run_pipeline)
+        run_btn.pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Cancel", command=dialog.destroy).pack(
+            side=tk.LEFT, padx=5
+        )
+
+    def _open_content_planning(self):
+        """Open content planning dialog."""
+        # Open content planning dialog
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Content Planning")
+        dialog.geometry("800x600")
+
+        ttk.Label(dialog, text="Content Planning", font=("Arial", 12, "bold")).pack(pady=10)
+
+        # Controls
+        controls_frame = ttk.Frame(dialog)
+        controls_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        ttk.Label(controls_frame, text="Number of Videos:").pack(side=tk.LEFT, padx=5)
+        num_videos_var = tk.StringVar(value="7")
+        ttk.Spinbox(controls_frame, from_=1, to=30, textvariable=num_videos_var, width=10).pack(
+            side=tk.LEFT, padx=5
+        )
+
+        # Plan display
+        plan_frame = ttk.LabelFrame(dialog, text="Content Plan", padding="10")
+        plan_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        columns = ("num", "type", "purpose", "date", "time", "duration")
+        tree = ttk.Treeview(plan_frame, columns=columns, show="headings")
+
+        tree.heading("num", text="#")
+        tree.heading("type", text="Sound Type")
+        tree.heading("purpose", text="Purpose")
+        tree.heading("date", text="Date")
+        tree.heading("time", text="Time")
+        tree.heading("duration", text="Duration")
+
+        tree.column("num", width=40)
+        tree.column("type", width=120)
+        tree.column("purpose", width=80)
+        tree.column("date", width=100)
+        tree.column("time", width=80)
+        tree.column("duration", width=80)
+
+        scrollbar = ttk.Scrollbar(plan_frame, orient=tk.VERTICAL, command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def generate_plan():
+            try:
+                num_videos = int(num_videos_var.get())
+                from project_name.core.orchestrator import AutotubeOrchestrator
+
+                orchestrator = AutotubeOrchestrator()
+                plan = orchestrator.plan_content(num_videos=num_videos)
+
+                # Clear tree
+                for item in tree.get_children():
+                    tree.delete(item)
+
+                # Add items
+                for item in plan:
+                    tree.insert(
+                        "",
+                        tk.END,
+                        values=(
+                            item["video_number"],
+                            item["sound_type"],
+                            item["purpose"],
+                            item["scheduled_date"],
+                            item["optimal_time"],
+                            f"{item['duration_hours']}h",
+                        ),
+                    )
+
+                messagebox.showinfo("Success", f"Generated plan for {num_videos} videos")
+
+            except Exception as e:
+                messagebox.showerror("Error", f"Error generating plan: {e}")
+
+        # Buttons
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(pady=10)
+
+        ttk.Button(button_frame, text="Generate Plan", command=generate_plan).pack(
+            side=tk.LEFT, padx=5
+        )
+        ttk.Button(button_frame, text="Close", command=dialog.destroy).pack(
+            side=tk.LEFT, padx=5
+        )
+
+    def _clear_log(self):
+        """Clear the log display."""
+        if hasattr(self, "log_text"):
+            self.log_text.config(state=tk.NORMAL)
+            self.log_text.delete(1.0, tk.END)
+            self.log_text.config(state=tk.DISABLED)
+
+    def _refresh_view(self):
+        """Refresh the current view."""
+        self.status_var.set("View refreshed")
+
+    def _toggle_toolbar(self):
+        """Toggle toolbar visibility."""
+        if hasattr(self, "toolbar"):
+            if self.toolbar.winfo_viewable():
+                self.toolbar.pack_forget()
+            else:
+                self.toolbar.pack(side=tk.TOP, fill=tk.X, before=self.main_notebook)
+
+    def _toggle_status_bar(self):
+        """Toggle status bar visibility."""
+        # Find status bar frame
+        for widget in self.root.winfo_children():
+            if isinstance(widget, ttk.Frame) and widget.cget("relief") == tk.SUNKEN:
+                if widget.winfo_viewable():
+                    widget.pack_forget()
+                else:
+                    widget.pack(side=tk.BOTTOM, fill=tk.X)
+                break
