@@ -621,7 +621,7 @@ class PipelinePanel:
 
             # Get title from metadata if available
             title = None
-            if hasattr(self, "current_metadata"):
+            if self.current_metadata:
                 title = self.current_metadata.get("title")
 
             video_path = self.orchestrator.create_video_from_mix(
@@ -656,7 +656,7 @@ class PipelinePanel:
             messagebox.showerror("Error", f"Video file not found: {video_file}")
             return
 
-        if not hasattr(self, "current_metadata"):
+        if not self.current_metadata:
             messagebox.showerror("Error", "Please generate metadata first (Step 2)")
             return
 

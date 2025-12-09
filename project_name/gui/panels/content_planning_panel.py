@@ -196,8 +196,8 @@ class ContentPlanningPanel:
                 with open(file_path, "w") as f:
                     json.dump(self.current_plan, f, indent=2)
             elif file_path.endswith(".csv"):
-                if self.current_plan:  # Additional safety check
-                    with open(file_path, "w", newline="") as f:
+                # Redundant check removed - already verified on line 175
+                with open(file_path, "w", newline="") as f:
                         writer = csv.DictWriter(f, fieldnames=self.current_plan[0].keys())
                         writer.writeheader()
                         writer.writerows(self.current_plan)
