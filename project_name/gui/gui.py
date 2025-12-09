@@ -238,9 +238,9 @@ class SoundToolGUI:
         self.status_var = tk.StringVar()
         self.status_var.set("Ready")
         # Using a simple Frame for the status bar container to avoid LabelFrame border
-        status_bar_frame = ttk.Frame(self.root, relief=tk.SUNKEN, padding=2)
-        status_bar_frame.pack(side=tk.BOTTOM, fill=tk.X)
-        ttk.Label(status_bar_frame, textvariable=self.status_var, anchor=tk.W).pack(
+        self.status_bar_frame = ttk.Frame(self.root, relief=tk.SUNKEN, padding=2)
+        self.status_bar_frame.pack(side=tk.BOTTOM, fill=tk.X)
+        ttk.Label(self.status_bar_frame, textvariable=self.status_var, anchor=tk.W).pack(
             fill=tk.X, padx=5, pady=2
         )
 
@@ -1102,15 +1102,12 @@ class SoundToolGUI:
             if self.toolbar.winfo_viewable():
                 self.toolbar.pack_forget()
             else:
-                self.toolbar.pack(side=tk.TOP, fill=tk.X, before=self.main_notebook)
+                self.toolbar.pack(side=tk.TOP, fill=tk.X)
 
     def _toggle_status_bar(self):
         """Toggle status bar visibility."""
-        # Find status bar frame
-        for widget in self.root.winfo_children():
-            if isinstance(widget, ttk.Frame) and widget.cget("relief") == tk.SUNKEN:
-                if widget.winfo_viewable():
-                    widget.pack_forget()
-                else:
-                    widget.pack(side=tk.BOTTOM, fill=tk.X)
-                break
+        if hasattr(self, "status_bar_frame"):
+            if self.status_bar_frame.winfo_viewable():
+                self.status_bar_frame.pack_forget()
+            else:
+                self.status_bar_frame.pack(side=tk.BOTTOM, fill=tk.X)

@@ -13,7 +13,6 @@ import os
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
