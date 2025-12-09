@@ -3,6 +3,8 @@
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**📚 New User?** Check out the [Quick Start Guide](QUICKSTART.md) for the fastest way to get started!
+
 ## Overview
 
 Autotube is a complete automation tool for creating and uploading ambient sleep/relaxation sound videos to YouTube. It handles the entire workflow from audio processing and mixing to video generation, SEO-optimized metadata creation, and YouTube upload.
@@ -77,6 +79,24 @@ autotube/
 └── README.md                  # This file
 ```
 
+## Quick Start
+
+### One-Click Installation ⚡
+
+The easiest way to install and run Autotube:
+
+**Windows:**
+1. Double-click `install.bat` to install
+2. Double-click `autotube.bat` to run
+
+**macOS/Linux:**
+1. Run `./install.sh` to install
+2. Run `./autotube.sh` to run
+
+That's it! See [INSTALL.md](INSTALL.md) for detailed installation instructions and troubleshooting.
+
+---
+
 ## Installation
 
 ### Prerequisites
@@ -101,13 +121,28 @@ brew install ffmpeg
 **Windows:**
 Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH.
 
-### Install Dependencies
+### Automated Installation (Recommended)
+
+**Windows:**
+```batch
+# Run the one-click installer
+install.bat
+```
+
+**macOS/Linux:**
+```bash
+# Run the one-click installer
+chmod +x install.sh
+./install.sh
+```
+
+### Manual Installation
 
 **Using pip:**
 ```bash
 # Create a virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -123,7 +158,7 @@ poetry install
 
 **Windows Quick Setup:**
 ```batch
-# Run the setup script
+# Run the development setup script
 .\dev_setup.bat
 ```
 
