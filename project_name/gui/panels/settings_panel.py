@@ -198,6 +198,21 @@ class SettingsPanel:
     def _save_general_settings(self):
         """Save general settings."""
         try:
+            # Validate RGB values
+            try:
+                bg_r = int(self.bg_r_var.get())
+                bg_g = int(self.bg_g_var.get())
+                bg_b = int(self.bg_b_var.get())
+                
+                if not (0 <= bg_r <= 255 and 0 <= bg_g <= 255 and 0 <= bg_b <= 255):
+                    raise ValueError("RGB values must be between 0 and 255")
+            except ValueError as e:
+                messagebox.showerror(
+                    "Invalid RGB Values",
+                    f"Background color values must be integers between 0 and 255.\n\n{e}"
+                )
+                return
+            
             settings = {
                 "folders": {
                     "input": self.input_folder_var.get(),
@@ -210,11 +225,7 @@ class SettingsPanel:
                 },
                 "video": {
                     "default_waveform": self.default_waveform_var.get(),
-                    "background_color": [
-                        int(self.bg_r_var.get()),
-                        int(self.bg_g_var.get()),
-                        int(self.bg_b_var.get()),
-                    ],
+                    "background_color": [bg_r, bg_g, bg_b],
                 },
                 "freesound": {"api_key": self.freesound_key_var.get()},
             }
