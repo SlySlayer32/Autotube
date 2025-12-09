@@ -6,6 +6,7 @@ This panel provides content planning and scheduling features:
 - Track content calendar
 """
 
+import csv
 import json
 import logging
 import tkinter as tk
@@ -195,8 +196,6 @@ class ContentPlanningPanel:
                 with open(file_path, "w") as f:
                     json.dump(self.current_plan, f, indent=2)
             elif file_path.endswith(".csv"):
-                import csv
-
                 with open(file_path, "w", newline="") as f:
                     writer = csv.DictWriter(f, fieldnames=self.current_plan[0].keys())
                     writer.writeheader()

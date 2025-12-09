@@ -6,9 +6,11 @@ This panel provides interfaces for:
 - Preset application
 """
 
+import json
 import logging
+import os
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import filedialog, messagebox, ttk
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +46,6 @@ class SettingsPanel:
 
     def _setup_general_tab(self):
         """Set up the general settings tab."""
-        from tkinter import filedialog
-        
         frame = ttk.Frame(self.general_frame, padding="10")
         frame.pack(fill=tk.BOTH, expand=True)
 
@@ -198,9 +198,6 @@ class SettingsPanel:
     def _save_general_settings(self):
         """Save general settings."""
         try:
-            import json
-            import os
-
             settings = {
                 "folders": {
                     "input": self.input_folder_var.get(),

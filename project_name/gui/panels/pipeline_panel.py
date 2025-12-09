@@ -10,6 +10,7 @@ This panel provides complete pipeline workflow control including:
 
 import logging
 import os
+import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from typing import Optional
@@ -270,9 +271,8 @@ class PipelinePanel:
         )
 
         self.step1_result_var = tk.StringVar(value="Not executed")
-        ttk.Label(step1_frame, textvariable=self.step1_result_var, foreground="gray").pack(
-            pady=5
-        )
+        self.step1_result_label = tk.Label(step1_frame, textvariable=self.step1_result_var, fg="gray")
+        self.step1_result_label.pack(pady=5)
 
         # Step 2: Generate Metadata
         step2_frame = ttk.LabelFrame(
@@ -297,9 +297,8 @@ class PipelinePanel:
         ).pack(side=tk.LEFT, padx=5)
 
         self.step2_result_var = tk.StringVar(value="Not executed")
-        ttk.Label(step2_frame, textvariable=self.step2_result_var, foreground="gray").pack(
-            pady=5
-        )
+        self.step2_result_label = tk.Label(step2_frame, textvariable=self.step2_result_var, fg="gray")
+        self.step2_result_label.pack(pady=5)
 
         # Step 3: Create Video
         step3_frame = ttk.LabelFrame(steps_frame, text="Step 3: Create Video", padding="10")
@@ -327,9 +326,8 @@ class PipelinePanel:
         )
 
         self.step3_result_var = tk.StringVar(value="Not executed")
-        ttk.Label(step3_frame, textvariable=self.step3_result_var, foreground="gray").pack(
-            pady=5
-        )
+        self.step3_result_label = tk.Label(step3_frame, textvariable=self.step3_result_var, fg="gray")
+        self.step3_result_label.pack(pady=5)
 
         # Step 4: Upload to YouTube
         step4_frame = ttk.LabelFrame(
@@ -363,9 +361,8 @@ class PipelinePanel:
         )
 
         self.step4_result_var = tk.StringVar(value="Not executed")
-        ttk.Label(step4_frame, textvariable=self.step4_result_var, foreground="gray").pack(
-            pady=5
-        )
+        self.step4_result_label = tk.Label(step4_frame, textvariable=self.step4_result_var, fg="gray")
+        self.step4_result_label.pack(pady=5)
 
     def _setup_status_tab(self):
         """Set up the status and information tab."""
@@ -453,8 +450,6 @@ class PipelinePanel:
         self.results_text.config(state="disabled")
 
         # Run pipeline in background thread
-        import threading
-
         def run():
             try:
                 self._log_result("Starting Autotube Pipeline...")
@@ -554,7 +549,7 @@ class PipelinePanel:
             mix_type = self.step_mix_type_var.get()
 
             self.step1_result_var.set("Creating mix...")
-            self.step1_result_var.config(foreground="blue")
+            self.step1_result_label.config(fg="blue")
 
             audio_path = self.orchestrator.create_audio_mix(
                 duration_minutes=duration, mix_type=mix_type
@@ -563,16 +558,16 @@ class PipelinePanel:
             if audio_path:
                 self.step_audio_file_var.set(audio_path)
                 self.step1_result_var.set(f"✓ Created: {os.path.basename(audio_path)}")
-                self.step1_result_var.config(foreground="green")
+                self.step1_result_label.config(fg="green")
                 messagebox.showinfo("Success", f"Mix created: {audio_path}")
             else:
                 self.step1_result_var.set("✗ Failed to create mix")
-                self.step1_result_var.config(foreground="red")
+                self.step1_result_label.config(fg="red")
                 messagebox.showerror("Error", "Failed to create mix")
 
         except Exception as e:
             self.step1_result_var.set(f"✗ Error: {e}")
-            self.step1_result_var.config(foreground="red")
+            self.step1_result_label.config(fg="red")
             messagebox.showerror("Error", f"Error creating mix: {e}")
 
     def _step_generate_metadata(self):
@@ -584,7 +579,7 @@ class PipelinePanel:
             mix_type = self.step_mix_type_var.get()
 
             self.step2_result_var.set("Generating metadata...")
-            self.step2_result_var.config(foreground="blue")
+            self.step2_result_label.config(fg="blue")
 
             metadata = self.orchestrator.generate_metadata(
                 sound_type=sound_type,
@@ -596,14 +591,14 @@ class PipelinePanel:
             self.current_metadata = metadata
 
             self.step2_result_var.set(f"✓ Generated: {metadata['title'][:50]}...")
-            self.step2_result_var.config(foreground="green")
+            self.step2_result_label.config(fg="green")
 
             # Show metadata in a dialog
             self._show_metadata_dialog(metadata)
 
         except Exception as e:
             self.step2_result_var.set(f"✗ Error: {e}")
-            self.step2_result_var.config(foreground="red")
+            self.step2_result_label.config(fg="red")
             messagebox.showerror("Error", f"Error generating metadata: {e}")
 
     def _step_create_video(self):
@@ -619,7 +614,7 @@ class PipelinePanel:
 
         try:
             self.step3_result_var.set("Creating video...")
-            self.step3_result_var.config(foreground="blue")
+            self.step3_result_label.config(fg="blue")
 
             # Get title from metadata if available
             title = None
@@ -635,16 +630,16 @@ class PipelinePanel:
             if video_path:
                 self.step_video_file_var.set(video_path)
                 self.step3_result_var.set(f"✓ Created: {os.path.basename(video_path)}")
-                self.step3_result_var.config(foreground="green")
+                self.step3_result_label.config(fg="green")
                 messagebox.showinfo("Success", f"Video created: {video_path}")
             else:
                 self.step3_result_var.set("✗ Failed to create video")
-                self.step3_result_var.config(foreground="red")
+                self.step3_result_label.config(fg="red")
                 messagebox.showerror("Error", "Failed to create video")
 
         except Exception as e:
             self.step3_result_var.set(f"✗ Error: {e}")
-            self.step3_result_var.config(foreground="red")
+            self.step3_result_label.config(fg="red")
             messagebox.showerror("Error", f"Error creating video: {e}")
 
     def _step_upload_video(self):
@@ -664,7 +659,7 @@ class PipelinePanel:
 
         try:
             self.step4_result_var.set("Uploading to YouTube...")
-            self.step4_result_var.config(foreground="blue")
+            self.step4_result_label.config(fg="blue")
 
             metadata = self.current_metadata
             video_id = self.orchestrator.upload_video(
@@ -677,17 +672,17 @@ class PipelinePanel:
 
             if video_id:
                 self.step4_result_var.set(f"✓ Uploaded: {video_id}")
-                self.step4_result_var.config(foreground="green")
+                self.step4_result_label.config(fg="green")
                 url = f"https://www.youtube.com/watch?v={video_id}"
                 messagebox.showinfo("Success", f"Video uploaded!\nID: {video_id}\nURL: {url}")
             else:
                 self.step4_result_var.set("✗ Upload failed")
-                self.step4_result_var.config(foreground="red")
+                self.step4_result_label.config(fg="red")
                 messagebox.showerror("Error", "Failed to upload video")
 
         except Exception as e:
             self.step4_result_var.set(f"✗ Error: {e}")
-            self.step4_result_var.config(foreground="red")
+            self.step4_result_label.config(fg="red")
             messagebox.showerror("Error", f"Error uploading video: {e}")
 
     def _show_metadata_dialog(self, metadata):
