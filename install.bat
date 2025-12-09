@@ -12,10 +12,13 @@ echo                    AUTOTUBE - One-Click Installer
 echo ============================================================================
 echo.
 echo This installer will:
-echo   1. Check for Python 3.11+
+echo   1. Check for Python 3.11
 echo   2. Create a virtual environment
 echo   3. Install all dependencies
 echo   4. Set up the application
+echo.
+echo NOTE: This project requires Python 3.11 specifically due to
+echo       OpenL3 dependency constraints. Python 3.12+ is not supported yet.
 echo.
 echo Press Ctrl+C to cancel or
 pause
@@ -28,8 +31,8 @@ if %errorlevel% neq 0 (
     echo.
     echo ERROR: Python is not installed or not in PATH!
     echo.
-    echo Please install Python 3.11 or higher from:
-    echo https://www.python.org/downloads/
+    echo Please install Python 3.11 from:
+    echo https://www.python.org/downloads/release/python-3119/
     echo.
     echo Make sure to check "Add Python to PATH" during installation!
     pause

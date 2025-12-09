@@ -64,8 +64,9 @@ python -m project_name.cli gui
 
 ### Required
 
-- **Python 3.11 or higher** - [Download Python](https://www.python.org/downloads/)
+- **Python 3.11** (specifically) - [Download Python 3.11](https://www.python.org/downloads/release/python-3119/)
   - ⚠️ **Important:** During installation, check "Add Python to PATH"
+  - ⚠️ **Note:** Python 3.12+ is not currently supported due to OpenL3 dependency constraints
   
 - **FFmpeg** (for video generation)
   - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH

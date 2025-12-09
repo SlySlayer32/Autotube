@@ -17,7 +17,7 @@ distributing to users who don't have Python installed.
 block_cipher = None
 
 a = Analysis(
-    ['cli.py'],
+    ['project_name/cli.py'],
     pathex=[],
     binaries=[],
     datas=[
