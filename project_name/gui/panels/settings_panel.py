@@ -204,7 +204,7 @@ class SettingsPanel:
                 bg_g = int(self.bg_g_var.get())
                 bg_b = int(self.bg_b_var.get())
                 
-                if not (0 <= bg_r <= 255 and 0 <= bg_g <= 255 and 0 <= bg_b <= 255):
+                if not all(0 <= val <= 255 for val in [bg_r, bg_g, bg_b]):
                     raise ValueError("RGB values must be between 0 and 255")
             except ValueError as e:
                 messagebox.showerror(

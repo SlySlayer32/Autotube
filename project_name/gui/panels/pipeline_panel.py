@@ -25,12 +25,16 @@ class PipelinePanel:
         self.panel = panel
         self.content_frame = panel.content_frame
 
+        # Get root window reference
+        self.root = panel.winfo_toplevel()
+
         # Initialize orchestrator (lazy load)
         self._orchestrator = None
 
         # Track pipeline state
         self.pipeline_running = False
         self.current_step = None
+        self.current_metadata = None
 
         # Create the main layout
         self._create_ui()
@@ -481,7 +485,6 @@ class PipelinePanel:
                     str(e),
                 )
 
-        self.root = self.panel.winfo_toplevel()
         thread = threading.Thread(target=run, daemon=True)
         thread.start()
 
