@@ -3,6 +3,8 @@
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**📚 New User?** Check out the [Quick Start Guide](QUICKSTART.md) for the fastest way to get started!
+
 ## Overview
 
 Autotube is a complete automation tool for creating and uploading ambient sleep/relaxation sound videos to YouTube. It handles the entire workflow from audio processing and mixing to video generation, SEO-optimized metadata creation, and YouTube upload.
