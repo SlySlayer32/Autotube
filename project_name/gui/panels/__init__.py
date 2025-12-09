@@ -6,6 +6,8 @@ This package contains specialized panels for different functional areas of the a
 - audio_panel: Audio processing, effects, and manipulation
 - therapeutic_panel: 2024 research-based therapeutic audio generation
 - settings_panel: Application settings, presets, and preferences
+- pipeline_panel: Complete workflow automation and step-by-step control
+- content_planning_panel: Content planning and scheduling
 """
 
 from .analysis_panel import AnalysisPanel
@@ -13,5 +15,7 @@ from .audio_panel import AudioProcessingPanel
 from .input_panel import InputProcessingPanel
 from .therapeutic_panel import TherapeuticAudioPanel
 from .settings_panel import SettingsPanel
+from .pipeline_panel import PipelinePanel
+from .content_planning_panel import ContentPlanningPanel
 # Import the enhanced therapeutic panel
 from ..enhanced_therapeutic_panel import EnhancedTherapeuticPanel
