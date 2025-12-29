@@ -256,10 +256,13 @@ Relaxing {sound_type} Sounds - {duration} Hours
         if custom_template:
             template = custom_template
         else:
-            templates = self.TITLE_TEMPLATES.get(
-                purpose, self.TITLE_TEMPLATES["sleep"]
-            )
-            template = random.choice(templates)
+            templates = self.TITLE_TEMPLATES.get(purpose, self.TITLE_TEMPLATES["sleep"])
+            # For very long durations, prefer templates that contain a duration placeholder
+            templates_with_duration = [t for t in templates if "{duration" in t]
+            if duration_hours >= 24 and templates_with_duration:
+                template = random.choice(templates_with_duration)
+            else:
+                template = random.choice(templates)
 
         quality = random.choice(self.QUALITY_ADJECTIVES)
 
@@ -375,7 +378,8 @@ Relaxing {sound_type} Sounds - {duration} Hours
         # Remove duplicates while preserving order using walrus operator
         seen = set()
         unique_tags = [
-            tag for tag in tags
+            tag
+            for tag in tags
             if (tag_lower := tag.lower()) not in seen and not seen.add(tag_lower)
         ]
 
@@ -436,9 +440,7 @@ Relaxing {sound_type} Sounds - {duration} Hours
         Returns:
             Dictionary containing metadata with scheduling info.
         """
-        metadata = self.generate_complete_metadata(
-            sound_type, duration_hours, purpose
-        )
+        metadata = self.generate_complete_metadata(sound_type, duration_hours, purpose)
 
         if publish_date:
             metadata["scheduled_publish"] = publish_date.isoformat()

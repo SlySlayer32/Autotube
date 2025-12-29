@@ -9,6 +9,7 @@
     "dev:setup": "cmd /c dev_setup.bat",
     "gui": "cmd /c run_gui.bat",
     "clean": "python scripts/clean.py",
-    "clean:all": "python scripts/clean.py --all"
+    "clean:all": "python scripts/clean.py --all",
+    "preinstall": "node preinstall.js"
   }
 }

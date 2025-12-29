@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import time
 from typing import Dict, List, Optional
 
@@ -198,14 +199,18 @@ class MixCreator:
         current_duration = 0
 
         while current_duration < target_duration:
-            # Select random segment
-            segment = np.random.choice(audio_segments)
+            # Select random segment using Python random (pydub AudioSegment isn't numpy-friendly)
+            segment = random.choice(audio_segments)
 
             if current_duration == 0:
                 mix = segment
             else:
-                # Crossfade with previous audio
-                mix = mix.append(segment, crossfade=crossfade_duration)
+                # Ensure crossfade is not longer than either segment to avoid errors
+                effective_crossfade = min(crossfade_duration, len(mix), len(segment))
+                if effective_crossfade <= 0:
+                    mix = mix.append(segment)
+                else:
+                    mix = mix.append(segment, crossfade=effective_crossfade)
 
             current_duration = len(mix)
 
@@ -225,8 +230,10 @@ class MixCreator:
         Returns:
             Processed audio mix
         """
-        # Apply fade in/out
-        mix = mix.fade_in(profile["fade_in"]).fade_out(profile["fade_out"])
+        # Apply fade in/out (cap to mix length to avoid extending short clips)
+        fade_in = min(profile["fade_in"], len(mix))
+        fade_out = min(profile["fade_out"], len(mix))
+        mix = mix.fade_in(fade_in).fade_out(fade_out)
 
         # Apply frequency filtering based on mix type
         if "low_pass" in profile:

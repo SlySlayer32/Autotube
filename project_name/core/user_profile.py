@@ -167,8 +167,18 @@ class UserProfile:
             non_preferred_params = variant_a_params
 
         # Update preferences based on the test
+        if "category_weights" in preferred_params:
+            # Adjust category weights toward preferred variant
+            for category, pref_value in preferred_params["category_weights"].items():
+                if category in self.category_weights:
+                    current = self.category_weights[category]
+                    # Move 30% of the way toward the preferred value
+                    self.category_weights[category] = (
+                        current + (pref_value - current) * 0.3
+                    )
+
         if "primary_category" in preferred_params:
-            # Increase weight for preferred category
+            # Increase weight for preferred category (backwards-compatible)
             category = preferred_params["primary_category"]
             if category in self.category_weights:
                 self.category_weights[category] = min(
@@ -190,7 +200,6 @@ class UserProfile:
                     # Move 30% of the way toward the preferred value
                     current = self.volume_preferences[key]
                     self.volume_preferences[key] = current + (value - current) * 0.3
-
         logger.info(
             f"Updated profile for {self.name} based on A/B test (preferred: variant {preferred_variant})"
         )
