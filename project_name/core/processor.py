@@ -39,12 +39,106 @@ class SoundProcessor:
         self.output_folder = output_folder
         self.sample_rate = sample_rate
         self.bit_rate = bit_rate
-        self.channels = 1  # Added default channels attribute
-        self.channels = 1  # Added default channels attribute
+        self.channels = 2  # Default to stereo
 
         # Create necessary directories
         for folder in [input_folder, processed_folder, output_folder]:
             os.makedirs(folder, exist_ok=True)
+
+    def analyze_audio_features(self, file_path: str) -> Dict[str, float]:
+        """
+        Analyze an audio file and return core features required by tests.
+        """
+        try:
+            y, sr = librosa.load(file_path, sr=self.sample_rate)
+            features = self._extract_audio_features(y, sr)
+            # Map to the expected keys
+            return {
+                "duration": features.get("duration", 0.0),
+                "rms_energy": float(np.mean(librosa.feature.rms(y=y))),
+                "spectral_centroid": features.get("spectral_centroid", 0.0),
+                "spectral_bandwidth": features.get("spectral_bandwidth", 0.0),
+                "tempo": features.get("tempo", 0.0),
+            }
+        except FileNotFoundError:
+            raise
+        except Exception as e:
+            logger.warning(f"analyze_audio_features failed for {file_path}: {e}")
+            return {
+                "duration": 0.0,
+                "rms_energy": 0.0,
+                "spectral_centroid": 0.0,
+                "spectral_bandwidth": 0.0,
+                "tempo": 0.0,
+            }
+
+    def trim_silence(
+        self, file_path: str, silence_thresh: int = -40, min_silence_len: int = 500
+    ) -> str:
+        """
+        Trim leading and trailing silence from an audio file and save processed file.
+        Raises FileNotFoundError if file does not exist.
+        """
+        from pydub.silence import detect_nonsilent
+
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(file_path)
+
+        audio = AudioSegment.from_file(file_path)
+        nonsilent_ranges = detect_nonsilent(
+            audio, min_silence_len=min_silence_len, silence_thresh=silence_thresh
+        )
+        if not nonsilent_ranges:
+            # Nothing but silence - return empty silent file
+            trimmed = AudioSegment.silent(duration=0)
+        else:
+            start = nonsilent_ranges[0][0]
+            end = nonsilent_ranges[-1][1]
+            trimmed = audio[start:end]
+
+        # Save trimmed file
+        filename = os.path.basename(file_path)
+        output_filename = f"trim_{os.path.splitext(filename)[0]}.wav"
+        output_path = os.path.join(self.processed_folder, output_filename)
+        trimmed.export(output_path, format="wav")
+        logger.info(f"Trimmed silence saved to {output_path}")
+        return output_path
+
+    def normalize_audio(
+        self, audio: AudioSegment, target_db: float = -20.0
+    ) -> AudioSegment:
+        """
+        Normalize an AudioSegment to target dBFS.
+        """
+        try:
+            change_dB = target_db - audio.dBFS
+            return audio.apply_gain(change_dB)
+        except Exception as e:
+            logger.error(f"normalize_audio failed: {e}")
+            return audio
+
+    def process_batch(self) -> list:
+        """
+        Process all files in the input folder and return a list of processed file paths.
+        """
+        processed = []
+        for fname in os.listdir(self.input_folder):
+            src = os.path.join(self.input_folder, fname)
+            result = self.preprocess_audio(src)
+            if result:
+                processed.append(result)
+        return processed
+
+    def apply_fade_in(self, audio: AudioSegment, duration_ms: int) -> AudioSegment:
+        return audio.fade_in(duration_ms)
+
+    def apply_fade_out(self, audio: AudioSegment, duration_ms: int) -> AudioSegment:
+        return audio.fade_out(duration_ms)
+
+    def apply_compression(
+        self, audio: AudioSegment, threshold: int, ratio: float
+    ) -> AudioSegment:
+        return self._apply_compression(audio, threshold, ratio)
 
         # Initialize empty categories
         self.categories = {
@@ -901,9 +995,13 @@ class QueueHandler(logging.Handler):
     def emit(self, record):
         self.log_queue.put(self.format(record))
 
+
 try:
     from .audio_similarity import AudioSimilarityMatcher, create_similarity_matcher
+
     SIMILARITY_AVAILABLE = True
 except ImportError:
     SIMILARITY_AVAILABLE = False
-    logger.warning("Audio similarity matching not available. Install openl3 for this feature.")
+    logger.warning(
+        "Audio similarity matching not available. Install openl3 for this feature."
+    )
